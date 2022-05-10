@@ -1,15 +1,16 @@
-import numpy as np
-import gym
-import argparse
-import yaml
 import random
-from munch import munchify
-from ddpg_agent import DDPGAgent
 import datetime
-
+import argparse
 from pprint import pprint
+
+import gym
+import yaml
 import torch
+import numpy as np
+from munch import munchify
 from torch.utils.tensorboard import SummaryWriter
+
+from ddpg_agent import DDPGAgent
 
 
 def load_config(filepath):
@@ -39,11 +40,13 @@ def get_options():
     parser.add_argument('--run_name', dest='run_name', default='run')
     parser.add_argument('--use_her', dest='use_her', action='store_true')
     parser.add_argument('--sparse_reward', dest='sparse_reward', action='store_true')
+    parser.add_argument('--soft_tau', dest='soft_tau', default=0.001, type=float)
     args = parser.parse_args()
     cfg = load_config(filepath=args.config_path)
     cfg['run_name'] = args.run_name
     cfg['use_her'] = args.use_her
     cfg['sparse_reward'] = args.sparse_reward
+    cfg['soft_tau'] = args.soft_tau
     pprint(cfg)
     cfg = munchify(cfg)
     return cfg

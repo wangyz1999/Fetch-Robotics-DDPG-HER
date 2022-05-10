@@ -1,11 +1,9 @@
-import numpy as np
 import torch
 import torch.optim as optim
 
+from utils import *
 from models import Actor, Critic
 from memory import ExperienceReplayMemory
-
-from utils import *
 
 
 class DDPGAgent(object):
@@ -76,10 +74,10 @@ class DDPGAgent(object):
         next_actions = self.actor_target(next_state)
         next_q_value = self.critic_target(next_state, next_actions.detach())
 
-        # if self.cfg.sparse_reward:
-        #     q_prime = reward[:, None] + self.cfg.gamma * done[:, None] * next_q_value
-        # else:
-        q_prime = reward[:, None] + self.cfg.gamma * next_q_value
+        if self.cfg.sparse_reward:
+            q_prime = reward[:, None] + self.cfg.gamma * done[:, None] * next_q_value
+        else:
+            q_prime = reward[:, None] + self.cfg.gamma * next_q_value
 
         critic_loss = torch.nn.functional.mse_loss(q_value, q_prime)
         self.critic_optim.zero_grad()
