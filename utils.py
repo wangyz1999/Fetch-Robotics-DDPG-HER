@@ -19,7 +19,8 @@ def hard_update(target, source):
     for target_param, param in zip(target.parameters(), source.parameters()):
             target_param.data.copy_(param.data)
 
-
+# Ornstein-Uhlenbeck Process
+# https://gist.github.com/cyoon1729/2ea43c5e1b717cc072ebc28006f4c887#file-utils-py
 class OUNoise:
     """Ornstein-Uhlenbeck process."""
 

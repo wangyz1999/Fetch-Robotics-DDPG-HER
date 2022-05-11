@@ -17,6 +17,7 @@ class DDPGAgent(object):
         self.actor_target = Actor(cfg, env_params).cuda()
         self.critic_target = Critic(cfg, env_params).cuda()
 
+        # make sure source and target network has the same parameters
         hard_update(self.actor_target, self.actor)
         hard_update(self.critic_target, self.critic)
 
@@ -46,7 +47,7 @@ class DDPGAgent(object):
     def choose_action(self, observation):
         pi = self.actor(observation.cuda().float())
         action = pi.detach().cpu().numpy().squeeze()
-        # add the gaussian
+        # add the gaussian noise
         action += self.cfg.noise_eps * self.env_params.action_max * np.random.randn(*action.shape)
         action = np.clip(action, -self.env_params.action_max, self.env_params.action_max)
         # random actions...
@@ -57,6 +58,7 @@ class DDPGAgent(object):
         return action
 
     def choose_action_deterministic(self, observation):
+        # choose action without noise and without epsilon randomness
         with torch.no_grad():
             pi = self.actor(observation.cuda().float())
         action = pi.detach().cpu().numpy().squeeze()
@@ -90,5 +92,6 @@ class DDPGAgent(object):
         actor_loss.backward()
         self.actor_optim.step()
 
+        # update target network from source network with a certain ratio
         soft_update(self.actor_target, self.actor, self.cfg.soft_tau)
         soft_update(self.critic_target, self.critic, self.cfg.soft_tau)

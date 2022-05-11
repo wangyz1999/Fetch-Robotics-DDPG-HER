@@ -133,5 +133,6 @@ if __name__ == '__main__':
                   'success rate:', sum(success_history[-100:]) / 100,
                   'reward:', sum(episode_reward_history[-100:]) / 100)
 
+        # Calculate success rate for 100 episodes
         average_success_rate = sum(([0.0] * 100 + success_history)[-100:]) / 100
         writer.add_scalar('Success Rate', average_success_rate, episode)
